@@ -28,3 +28,9 @@ print(statement.capitalize())
 
 #split() to split the string in array
 print(statement.split(" "))
+
+#lists which work as array
+num = [10,5,6,8,9,40];
+print("list:", num)
+print("lists first value: ",num[0])
+print("lists last value: ",num[-1])
