@@ -4,4 +4,4 @@ c = input("K(g) or (L)bs ")
 if c.upper() == "K":
     print("your weight in L(bs): ",num/0.454)
 elif c.upper() == "L" :
-    print("your weight in kg: ", num * 4.54)
+    print("your weight in kg: ", num * 0.454)
