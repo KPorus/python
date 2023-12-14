@@ -1,0 +1,2 @@
+help(range)
+help()

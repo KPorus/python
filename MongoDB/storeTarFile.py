@@ -11,7 +11,7 @@ with open(file_path, 'rb') as file:
 
  
 # Connect to MongoDB
-client = MongoClient('mongodb+srv://admin:xkxFXVxzKzXSTK7x@cluster0.1rqmivg.mongodb.net/')
+client = MongoClient('${process.env.MONGODB}')
 db = client['evalloDB']
 collection = db['evallo']
 
