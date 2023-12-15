@@ -1,0 +1,16 @@
+import array as arr
+
+# help(arr)
+number1 = arr.array("i",[1,2,3,4,5,6,7,8])
+number2 = arr.array("d",[1,2,3,4,5,6,7,8])
+number3 = arr.array("l",[1,2,3,4,5,6,7,8])
+print("Float",number2)
+print("unsigned Int",number1)
+print("signed Int",number3)
+print(number3[-3:-1])
+number3.extend([20])
+print(number3)
+print(number3[-3:-1])
+number3.insert(2,100)
+print(number3)
+print(number3[-3:-1])
