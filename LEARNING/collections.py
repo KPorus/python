@@ -1,6 +1,7 @@
 import collections
 
 # print(collections.__dict__)
+# print(dir(collections))
 # help(collections)
 
 string = 'Fardin is back'
