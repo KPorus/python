@@ -8,7 +8,9 @@ class Node:
 class StackFrontier():
     def __init__(self):
         self.frontier = []
-    
+        
+    def addFrontier(self, node):
+        self.frontier.append(node)
     def remove(self):
         if len(self.frontier) == 0:
             raise Exception("Frontier is empty")
@@ -37,19 +39,18 @@ class Maze():
         print(sys.argv[1])
         
         # first way of calculating height and width from file contents
-        with open(filename) as f:
-            contents = f.read()
-        print(contents)
+        # with open(filename) as f:
+        #     contents = f.read()
+        # print(contents)
         
-        contents = contents.splitlines()
-        self.height = len(contents)
-        self.width = max(len(line) for line in contents)
-        print(self.height, self.width)
+        # contents = contents.splitlines()
+        # self.height = len(contents)
+        # self.width = max(len(line) for line in contents)
+        # print(self.height, self.width)
         
         # 2nd way of calculating height and width from file contents
         file = open(filename,'r')
         lines = file.readlines()
-        print(lines)
         if not ("A" in " ".join(lines)):
             raise Exception("maze must have exactly one start point")
         if not ("B" in " ".join(lines)):
@@ -58,9 +59,56 @@ class Maze():
         # self.height = max([i+1 for i in range(len(lines))])
         self.height = len(lines)
         self.width = max([len(line)-1 for line in lines])
-        print(self.height, self.width)
-        pass
-
+            
+        self.wall = []
+        for i in range(self.height):
+            row=[]
+            for j in range(self.width):
+                try:
+                    if lines[i][j] == "A":
+                        self.start = (i, j)
+                        row.append(False)
+                    if lines[i][j] == "B":
+                        self.goal = (i, j)
+                        row.append(False)
+                    if lines[i][j] == " ":
+                        row.append(False)
+                    else:
+                        row.append(True)
+                except IndexError:
+                    row.append(False)
+            self.wall.append(row)
+        self.solution = None
+        
+    def solve(self):
+        start = Node(state = self.start,parent = None, action = None)
+        frontier = StackFrontier()
+        frontier.addFrontier(start)
+        
+        self.iteration = 0
+        self.explored = set()
+        while True:
+            if frontier.empty():
+                raise Exception("No solution.")
+            else:
+                node = frontier.remove()
+                self.iteration += 1
+                if node.state == self.goal:
+                    actions = []
+                    cells = []
+                    while self.parent is not None:
+                        actions.append(node.action)
+                        cells.append(node.action)
+                        node = node.parent
+                    actions.reverse()
+                    cells.reverse()
+                    self.solution = (actions, cells)
+                    return 
+                self.explored.add(node)
+        
+        
+        
+        
 if len(sys.argv) != 2:
     sys.exit("Usage: python maze.py maze.txt")
 
