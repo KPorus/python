@@ -1,9 +1,9 @@
 import sys
 class Node:
-    def __init__(self,state,parent,acton):
+    def __init__(self,state,parent,action):
         self.state = state
-        self.acton = acton
         self.parent = parent
+        self.action = action
         
 class StackFrontier():
     def __init__(self):
@@ -61,8 +61,12 @@ class Maze():
         self.width = max([len(line)-1 for line in lines])
             
         self.wall = []
+        self.points = []
+        startP = {}
+        endP = {}
         for i in range(self.height):
             row=[]
+            point = []
             for j in range(self.width):
                 try:
                     if lines[i][j] == "A":
@@ -70,42 +74,87 @@ class Maze():
                         row.append(False)
                     if lines[i][j] == "B":
                         self.goal = (i, j)
+                        endP["x"] = i
+                        endP["y"] = j
                         row.append(False)
                     if lines[i][j] == " ":
                         row.append(False)
+                        point.append(abs((endP['x'] - i) + (endP['y'] - j)))
+                        print(point)
                     else:
                         row.append(True)
                 except IndexError:
                     row.append(False)
             self.wall.append(row)
+            self.points.append(point)
+            #print(self.points)
         self.solution = None
+    
+    def neighbors(self,state):
+        row, col = state
+        candidates = [
+            ("up", (row-1, col)),
+            ("down", (row+1, col)),
+            ("left", (row, col-1)),
+            ("right", (row, col+1))
+        ]
+
         
+        result = []
+        for action, (r,c) in candidates:
+            if 0<=r < self.height and 0<=c < self.width and not self.wall[r][c]:
+                result.append((action,(r,c)))
+        return result
+    
     def solve(self):
-        start = Node(state = self.start,parent = None, action = None)
+        start = Node(state=self.start, parent=None, action=None)
         frontier = StackFrontier()
         frontier.addFrontier(start)
-        
+
         self.iteration = 0
         self.explored = set()
         while True:
             if frontier.empty():
                 raise Exception("No solution.")
-            else:
-                node = frontier.remove()
-                self.iteration += 1
-                if node.state == self.goal:
-                    actions = []
-                    cells = []
-                    while self.parent is not None:
-                        actions.append(node.action)
-                        cells.append(node.action)
-                        node = node.parent
-                    actions.reverse()
-                    cells.reverse()
-                    self.solution = (actions, cells)
-                    return 
-                self.explored.add(node)
+
+            node = frontier.remove()
+            self.iteration += 1
+            if node.state == self.goal:
+                actions = []
+                cells = []
+                while node.parent is not None:
+                    actions.append(node.action)
+                    cells.append(node.state)
+                    node = node.parent
+                actions.reverse()
+                cells.reverse()
+                self.solution = (actions, cells)
+                return
+            self.explored.add(node.state)
+
+            for action, state in self.neighbors(node.state):
+                if not frontier.contains_state(state) and state not in self.explored:
+                    child = Node(state=state, parent=node, action=action)
+                    frontier.addFrontier(child)
+
         
+    def print(self):
+        solution = self.solution[1] if self.solution is not None else None
+        print()
+        for i, row in enumerate(self.wall):
+            for j, col in enumerate(row):
+                if col:
+                    print("█", end="")
+                elif (i, j) == self.start:
+                    print("A", end="")
+                elif (i, j) == self.goal:
+                    print("B", end="")
+                elif solution is not None and (i, j) in solution:
+                    print("*", end="")
+                else:
+                    print(" ", end="")
+            print()
+        print()    
         
         
         
@@ -113,3 +162,11 @@ if len(sys.argv) != 2:
     sys.exit("Usage: python maze.py maze.txt")
 
 m = Maze(sys.argv[1])
+print("Maze:")
+m.print()
+print("Solving...")
+m.solve()
+print("States Explored:", m.iteration)
+print("States Explored:", m.explored)
+print("Solution:")
+m.print()
