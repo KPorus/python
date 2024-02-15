@@ -17,9 +17,9 @@ if not output_directory:
 output_filename = easygui.enterbox(msg="Enter the name of the merged PDF file (including '.pdf'): ", title="Merged PDF Filename")
 # Check if the specified filename has a '.pdf' extension
 if output_filename.split('.')[-1].lower() != 'pdf':
-    output_path = f"{output_directory}/{output_filename}"
-else:
     output_path = f"{output_directory}/{output_filename}.pdf"
+else:
+    output_path = f"{output_directory}/{output_filename}"
 
 merger = PdfMerger()
 for pdf in arr:
